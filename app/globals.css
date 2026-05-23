@@ -896,6 +896,7 @@ textarea::placeholder {
 .public-markdown {
   font-size: clamp(1rem, 1.35vw, 1.12rem);
   line-height: 1.58;
+  overflow-wrap: anywhere;
 }
 
 .public-markdown > * {
@@ -1196,6 +1197,7 @@ textarea::placeholder {
   color: #231b16;
   font-size: clamp(1.05rem, 1.5vw, 1.24rem);
   line-height: 1.62;
+  overflow-wrap: anywhere;
 }
 
 .verdict-output > * {
@@ -1282,6 +1284,10 @@ textarea::placeholder {
 @media (max-width: 820px) {
   :root {
     --site-header-height: 96px;
+  }
+
+  body.verdict-mode {
+    overflow-y: auto;
   }
 
   .site-header {
@@ -1454,13 +1460,16 @@ textarea::placeholder {
   }
 
   .verdict-grid {
+    height: auto;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
     padding: 10px 0;
+    overflow: visible;
   }
 
   .verdict-panel {
-    overflow-y: auto;
+    height: auto;
+    overflow: visible;
   }
 
   .verdict-output {
@@ -1474,7 +1483,8 @@ textarea::placeholder {
   }
 
   .panel-portrait {
-    height: 150px;
+    position: relative;
+    height: 132px;
   }
 
   .post-verdict-actions {
