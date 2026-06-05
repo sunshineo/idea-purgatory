@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Comment</key>
+	<string>Personal LaunchAgent created by Gordon for Idea Purgatory; managed in /Users/gordon/code/side-projects/idea-purgatory/launchd.</string>
+	<key>Label</key>
+	<string>me.gordon.idea-purgatory.seed-board</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/zsh</string>
+		<string>-lc</string>
+		<string>cd /Users/gordon/code/side-projects/idea-purgatory &amp;&amp; npm run seed:once</string>
+	</array>
+	<key>StandardErrorPath</key>
+	<string>/Users/gordon/code/side-projects/idea-purgatory/seed-board.err.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/gordon/code/side-projects/idea-purgatory/seed-board.log</string>
+	<key>StartInterval</key>
+	<integer>1800</integer>
+	<key>WorkingDirectory</key>
+	<string>/Users/gordon/code/side-projects/idea-purgatory</string>
+</dict>
+</plist>

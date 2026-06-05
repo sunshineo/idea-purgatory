@@ -77,6 +77,8 @@ Keep both prompts short enough to be easy to iterate. The app expects each respo
 
 `vercel.json` identifies the project as a Next.js app. `app/api/judge/route.js` exports a 60-second max duration for the streaming LLM endpoint. Seeded board activity is expected to run from this Mac through the scripts in `cron/`. If the API changes, make sure the Next route handlers and shared community handlers still match.
 
+The local launchd agent for seeded board activity is installed at `~/Library/LaunchAgents/me.gordon.idea-purgatory.seed-board.plist`. The canonical source-controlled plist lives at `launchd/me.gordon.idea-purgatory.seed-board.plist` in this repo, and the installed LaunchAgent should be a symlink back to that file. It runs `npm run seed:once` every 1800 seconds (30 minutes) and intentionally does not use `RunAtLoad`.
+
 ## Code Style
 
 - This repo uses ESM JavaScript (`"type": "module"`).
