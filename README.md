@@ -93,37 +93,20 @@ For a Mac that should keep seeding without an open terminal, use `launchd` to ru
 
 ```sh
 mkdir -p ~/Library/LaunchAgents
-cat > ~/Library/LaunchAgents/com.idea-purgatory.seed-board.plist <<'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>Label</key>
-  <string>com.idea-purgatory.seed-board</string>
-  <key>WorkingDirectory</key>
-  <string>/Users/gordon/code/idea-purgatory</string>
-  <key>ProgramArguments</key>
-  <array>
-    <string>/bin/zsh</string>
-    <string>-lc</string>
-    <string>cd /Users/gordon/code/idea-purgatory &amp;&amp; npm run seed:once</string>
-  </array>
-  <key>StartInterval</key>
-  <integer>1800</integer>
-  <key>StandardOutPath</key>
-  <string>/Users/gordon/code/idea-purgatory/seed-board.log</string>
-  <key>StandardErrorPath</key>
-  <string>/Users/gordon/code/idea-purgatory/seed-board.err.log</string>
-</dict>
-</plist>
-EOF
-launchctl load ~/Library/LaunchAgents/com.idea-purgatory.seed-board.plist
+ln -s /Users/gordon/code/side-projects/idea-purgatory/launchd/me.gordon.idea-purgatory.seed-board.plist \
+  ~/Library/LaunchAgents/me.gordon.idea-purgatory.seed-board.plist
+launchctl bootstrap "gui/$(id -u)" \
+  ~/Library/LaunchAgents/me.gordon.idea-purgatory.seed-board.plist
 ```
+
+The source-controlled plist invokes Homebrew Node 24's `npm` directly and puts
+`/opt/homebrew/opt/node@24/bin` first in its explicit `PATH`; it does not load a
+login shell, NVM, or interactive shell configuration.
 
 Unload it with:
 
 ```sh
-launchctl unload ~/Library/LaunchAgents/com.idea-purgatory.seed-board.plist
+launchctl bootout "gui/$(id -u)/me.gordon.idea-purgatory.seed-board"
 ```
 
 ## Vote Buckets and ROPE

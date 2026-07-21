@@ -79,6 +79,10 @@ Keep both prompts short enough to be easy to iterate. The app expects each respo
 
 The local launchd agent for seeded board activity is installed at `~/Library/LaunchAgents/me.gordon.idea-purgatory.seed-board.plist`. The canonical source-controlled plist lives at `launchd/me.gordon.idea-purgatory.seed-board.plist` in this repo, and the installed LaunchAgent should be a symlink back to that file. It runs `npm run seed:once` every 1800 seconds (30 minutes) and intentionally does not use `RunAtLoad`.
 
+The LaunchAgent must invoke `/opt/homebrew/opt/node@24/bin/npm` directly and
+set an explicit `PATH` with `/opt/homebrew/opt/node@24/bin` first. Do not wrap
+the command in a login shell or rely on NVM or shell startup files.
+
 ## Code Style
 
 - This repo uses ESM JavaScript (`"type": "module"`).
