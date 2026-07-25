@@ -11,7 +11,7 @@ The tone is intentionally light, funny, and animated. This is not meant to feel 
 - Published idea pages with sanitized markdown verdict output.
 - Community voting and comments.
 - Public `/ideas` board with mutually exclusive vote buckets.
-- Seeded board activity cron for slow anonymous traffic simulation.
+- Manual seeded board activity tooling for slow anonymous traffic simulation.
 - Next.js App Router pages and Route Handlers for the UI and API.
 
 ## Tech Stack
@@ -85,29 +85,17 @@ The frontend posts ideas to `/api/judge` and reads a `text/event-stream` respons
 
 Published ideas and community interactions use `lib/store.mjs` through `lib/ideas-api.mjs`. The Next route handlers call that shared API layer through `lib/next-handler-adapter.mjs`.
 
-Seeded board activity lives in `cron/`. Run one pass locally with `npm run seed:once`. It randomly publishes from the 200-item seed bank in `cron/seed-data.mjs` at about 2-3 ideas per day when scheduled every 30 minutes, casts 0-10 random votes, and asks the LLM for 0-2 short idea-specific comments. Those writes go through the same app storage functions as normal anonymous activity.
+Seeded board activity lives in `cron/`. Run one pass manually with `npm run seed:once`. A pass may publish from the 200-item seed bank in `cron/seed-data.mjs`, cast 0-10 random votes, and ask the LLM for 0-2 short idea-specific comments. Those writes go through the same app storage functions as normal anonymous activity.
 
 Cron keeps its vote-shaping metadata in `cron_idea_evaluations`, a cron-owned table keyed by idea ID. A row means the seed traffic should lean either `blessed` or `damned`; no row means the idea stays neutral/purgatory and gets roughly even seeded votes. Each run checks the hidden evaluation distribution, ranks currently neutral ideas together when more blessed or damned intent is needed, assigns the top ranked ideas to `blessed`, assigns the bottom ranked ideas to `damned`, and leaves the middle unassigned. If the ranking call fails, cron falls back to a random ranking for that run. The public app schema does not depend on these buckets.
 
-For a Mac that should keep seeding without an open terminal, use `launchd` to run one pass every 30 minutes:
+### Deprecated local LaunchAgent
 
-```sh
-mkdir -p ~/Library/LaunchAgents
-ln -s /Users/gordon/code/side-projects/idea-purgatory/launchd/me.gordon.idea-purgatory.seed-board.plist \
-  ~/Library/LaunchAgents/me.gordon.idea-purgatory.seed-board.plist
-launchctl bootstrap "gui/$(id -u)" \
-  ~/Library/LaunchAgents/me.gordon.idea-purgatory.seed-board.plist
-```
-
-The source-controlled plist invokes Homebrew Node 24's `npm` directly and puts
-`/opt/homebrew/opt/node@24/bin` first in its explicit `PATH`; it does not load a
-login shell, NVM, or interactive shell configuration.
-
-Unload it with:
-
-```sh
-launchctl bootout "gui/$(id -u)/me.gordon.idea-purgatory.seed-board"
-```
+The local LaunchAgent `me.gordon.idea-purgatory.seed-board` was retired on
+July 25, 2026, and is no longer used. Its source-controlled plist has been
+removed; do not reinstall or bootstrap it. `npm run seed:once` remains
+available for an intentional one-off seed pass, but no recurring local
+scheduler is currently configured.
 
 ## Vote Buckets and ROPE
 

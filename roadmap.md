@@ -107,12 +107,12 @@ Board activity model:
 - Seed a small amount of board activity on a schedule, with randomness and daily caps.
 - Prefer curated ideas and templated comments first so automation does not create unnecessary LLM spend.
 - Only use LLM generation for occasional high-quality seed posts or comments, behind strict per-day limits.
-- Current implementation has a 200-item seed bank and a local Mac runner that can run every 30 minutes. It averages 2-3 new seeded ideas per day, casts 0-10 random votes, and posts 0-2 short LLM-written comments per run.
+- Current implementation has a 200-item seed bank and a local Mac runner that can be invoked manually. Each run may publish a seeded idea, cast 0-10 random votes, and post 0-2 short LLM-written comments. The former recurring LaunchAgent was retired on July 25, 2026.
 - Cron voting uses a cron-only `cron_idea_evaluations` table for hidden traffic intent. Rows are only `blessed` or `damned`; missing rows stay neutral so the public board can settle into roughly Blessed, Damned, and Purgatory thirds over time.
 
 Automation work:
 
-- Added a local runner script: `npm run seed:once`; use `launchd` `StartInterval` for the 30-minute schedule.
+- Added a local runner script: `npm run seed:once`. It is now manual-only; the former 30-minute launchd schedule has been retired.
 - Kept all seeded activity implementation files under `cron/` so they stay separate from app/runtime code.
 - Added an `activity_runs` table so each run is auditable.
 - Added a local seed bank of funny startup ideas, bot display names, and vote patterns.

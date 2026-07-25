@@ -48,7 +48,7 @@ LLM calls cost real money. The API key is expected to have restricted permission
 - `lib/store.mjs` currently creates and uses `ideas`, `votes`, and `comments` tables directly through `pg`; there is no ORM or separate migration tool yet.
 - Community endpoints are exposed by Next route handlers in `app/api/` and share logic through `lib/ideas-api.mjs`: `GET/POST /api/ideas`, `GET /api/ideas/:idOrSlug`, `POST /api/ideas/:idOrSlug/votes`, and `GET/POST /api/ideas/:idOrSlug/comments`.
 - Votes use an anonymous `pp_visitor` cookie so one visitor can switch between `bless` and `damn` without creating repeated vote rows.
-- Seeded board activity is isolated under `cron/` and runnable from this Mac with `npm run seed:once`; use `launchd` `StartInterval` for repeated runs.
+- Seeded board activity is isolated under `cron/` and runnable manually from this Mac with `npm run seed:once`. The former recurring launchd scheduler is retired and must not be reinstated unless explicitly requested.
 - `cron/seed-data.mjs` contains 200 seed ideas plus comment authors. The cron may publish one seed idea after running the same validation, angel/devil judgment, and title summary pipeline as a normal user launch.
 - Each cron run casts 0-10 random votes and posts 0-2 LLM-written short comments on random existing ideas.
 - Cron vote shaping uses `cron_idea_evaluations`, a cron-owned table keyed by idea ID. Stored rows are only `blessed` or `damned`; no row means neutral/purgatory and should receive roughly even seeded votes. Each run balances the hidden evaluation distribution toward one-third blessed, one-third damned, and one-third neutral by ranking currently neutral ideas together, assigning the top group to `blessed`, the bottom group to `damned`, and leaving the middle unassigned. If ranking fails, cron uses a random ranking fallback. Do not add these bucket fields to the public app schema.
@@ -75,13 +75,12 @@ Keep both prompts short enough to be easy to iterate. The app expects each respo
 
 ## Deployment Notes
 
-`vercel.json` identifies the project as a Next.js app. `app/api/judge/route.js` exports a 60-second max duration for the streaming LLM endpoint. Seeded board activity is expected to run from this Mac through the scripts in `cron/`. If the API changes, make sure the Next route handlers and shared community handlers still match.
+`vercel.json` identifies the project as a Next.js app. `app/api/judge/route.js` exports a 60-second max duration for the streaming LLM endpoint. Seeded board activity can be run manually from this Mac through the scripts in `cron/`. If the API changes, make sure the Next route handlers and shared community handlers still match.
 
-The local launchd agent for seeded board activity is installed at `~/Library/LaunchAgents/me.gordon.idea-purgatory.seed-board.plist`. The canonical source-controlled plist lives at `launchd/me.gordon.idea-purgatory.seed-board.plist` in this repo, and the installed LaunchAgent should be a symlink back to that file. It runs `npm run seed:once` every 1800 seconds (30 minutes) and intentionally does not use `RunAtLoad`.
-
-The LaunchAgent must invoke `/opt/homebrew/opt/node@24/bin/npm` directly and
-set an explicit `PATH` with `/opt/homebrew/opt/node@24/bin` first. Do not wrap
-the command in a login shell or rely on NVM or shell startup files.
+The local LaunchAgent `me.gordon.idea-purgatory.seed-board` was retired on
+July 25, 2026, and its source-controlled plist was removed. Do not reinstall
+or recreate it. `npm run seed:once` remains available for intentional one-off
+seeded board activity; no recurring local scheduler is currently configured.
 
 ## Code Style
 
